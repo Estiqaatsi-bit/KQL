@@ -1,2 +1,2 @@
 # KQL
-A collection of KQL queries for hunting 
+This repository contains a collection of KQL for threat hunting in Sentinel. 
