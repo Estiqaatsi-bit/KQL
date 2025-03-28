@@ -19,3 +19,21 @@ union isfuzzy=true Device*
 | extend ElapsedDays = timeDiffDays(LastLogTimestamp, now())
 | project DeviceName, LastLogTimestamp, LastLogType = Type, ElapsedDays
 ```
+## Search for any hosts
+```
+let timeFrame = timespan(14d); 
+// This function calculates the days since the last log was sent. 
+let timeDiffDays = (startDate:datetime, endDate:datetime) {
+    toint((endDate - startDate) / 1d)
+}; 
+union isfuzzy=true Device*
+| where TimeGenerated > ago(timeFrame)
+| where Type !in ('DeviceInfo', 'DeviceNetworkInfo')
+| summarize LastLogTimestamp = arg_max(TimeGenerated, Type) by DeviceName
+| extend ElapsedDays = timeDiffDays(LastLogTimestamp, now())
+| where ElapsedDays > 0
+| project DeviceName, LastLogTimestamp, LastLogType = Type, ElapsedDays
+```
+| Version | Date     | Comments        |
+|---------|----------|-----------------|
+| 1.0     | 28/03/25 | Initial Publish |
